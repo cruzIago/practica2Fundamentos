@@ -1,18 +1,20 @@
-var celulas = [[]];
+var celulas = [
+    []
+];
 
-window.onload = function () {
+window.onload = function() {
 
     function celula() {
-         vivo = false;
-         tiempo = 0;
-         vecinasVivas = 0;
+        vivo = false;
+        tiempo = 0;
+        vecinasVivas = 0;
     }
 
     for (var i = 0; i < 80; i++) {
         celulas[i] = [];
         for (var j = 0; j < 80; j++) {
             celulas[i][j] = new celula();
-            celulas[i][j].vecinasVivas=0;
+            celulas[i][j].vecinasVivas = 0;
         }
     }
     var x1 = document.getElementById("myCanvas");
@@ -53,18 +55,18 @@ window.onload = function () {
         }
     }
 
-    function play(){
-        for(var i=0;i<80;i++){
-            for(var j=0;j<80;j++){
-                if(celulas[i][j].vivo){
-                    celulas[i+1][j].vecinasVivas+=1;//Derecha
-                    celulas[i+1][j-1].vecinasVivas+=1;//Derecha arriba
-                    celulas[i][j-1].vecinasVivas+=1; //Arriba
-                    celulas[i-1][j-1].vecinasVivas+=1;//Arriba izquierda
-                    celulas[i-1][j].vecinasVivas+=1;//Izquierda
-                    celulas[i-1][j+1].vecinasVivas+=1;//Izquierda abajo
-                    celulas[i][j+1].vecinasVIvas+=1;//Abajo
-                    celulas[i+1][j+1].vecinasVivas+=1;//Abajo Derecha
+    function play() {
+        for (var i = 0; i < 80; i++) {
+            for (var j = 0; j < 80; j++) {
+                if (celulas[i][j].vivo) {
+                    celulas[i + 1][j].vecinasVivas += 1; //Derecha
+                    celulas[i + 1][j - 1].vecinasVivas += 1; //Derecha arriba
+                    celulas[i][j - 1].vecinasVivas += 1; //Arriba
+                    celulas[i - 1][j - 1].vecinasVivas += 1; //Arriba izquierda
+                    celulas[i - 1][j].vecinasVivas += 1; //Izquierda
+                    celulas[i - 1][j + 1].vecinasVivas += 1; //Izquierda abajo
+                    celulas[i][j + 1].vecinasVIvas += 1; //Abajo
+                    celulas[i + 1][j + 1].vecinasVivas += 1; //Abajo Derecha
                 }
             }
         }
@@ -74,58 +76,59 @@ window.onload = function () {
     function compruebaCelula(i, j) {
         if (celulas[i][j].vivo) {
             if (celulas[i][j].vecinasVivas < 2 || celulas[i][j].vecinasVivas > 3) {
-                celulas[i][j].vivo=false;
+                celulas[i][j].vivo = false;
 
             } else if (celulas[i][j].vecinasVivas >= 2 && celulas[i][j].vecinasVivas <= 3) {
-                celulas[i][j].vivo=true;
+                celulas[i][j].vivo = true;
             }
         } else {
             if (celulas[i][j].vecinasVivas == 3) {
-                celulas[i][j].vivo=true;
+                celulas[i][j].vivo = true;
             }
         }
     }
 
-    document.getElementById("play").addEventListener("click",function(){
+    document.getElementById("play").addEventListener("click", function() {
 
-        for(var i=0;i<79;i++){
-            for(var j=0;j<79;j++){
-                if(i==79){
-                    var x1=i-i;//devuelve 0
-                    var x2=i-1;//devuelve 78
-                }else if(i==0){
-                    var x1=i+1;//devuelve 1
-                    var x2=i+79;//devuelve 79
-                }else{
-                    var x1=i+1;
-                    var x2=i-1;
-                }
-                if(j==79){
-                    var y1=j-j;
-                    var y2=j-1;
-                }else if(j==0){
-                    var y1=j+1;
-                    var y2=j+79;
-                }else{
-                    var y1=j+1;
-                    var y2=j-1;
-                }
-                if(celulas[i][j].vivo){
-                    celulas[x1][j].vecinasVivas+=1;//Derecha
-                    celulas[x1][y2].vecinasVivas+=1;//Derecha arriba
-                    celulas[i][y2].vecinasVivas+=1; //Arriba
-                    celulas[x2][y2].vecinasVivas+=1;//Arriba izquierda
-                    celulas[x2][j].vecinasVivas+=1;//Izquierda
-                    celulas[x2][y1].vecinasVivas+=1;//Izquierda abajo
-                    celulas[i][y1].vecinasVIvas+=1;//Abajo
-                    celulas[x1][y1].vecinasVivas+=1;//Abajo Derecha
+        for (var i = 0; i < 80; i++) {
+            for (var j = 0; j < 80; j++) {
+                if (celulas[i][j].vivo) {
+                    if (i == 79) {
+                        var x1 = i - i; //devuelve 0
+                        var x2 = i - 1; //devuelve 78
+                    } else if (i == 0) {
+                        var x1 = i + 1; //devuelve 1
+                        var x2 = i + 79; //devuelve 79
+                    } else {
+                        var x1 = i + 1;
+                        var x2 = i - 1;
+                    }
+                    if (j == 79) {
+                        var y1 = j - j;
+                        var y2 = j - 1;
+                    } else if (j == 0) {
+                        var y1 = j + 1;
+                        var y2 = j + 79;
+                    } else {
+                        var y1 = j + 1;
+                        var y2 = j - 1;
+                    }
+
+                    celulas[x1][j].vecinasVivas += 1; //Derecha
+                    celulas[x1][y2].vecinasVivas += 1; //Derecha arriba
+                    celulas[i][y2].vecinasVivas += 1; //Arriba
+                    celulas[x2][y2].vecinasVivas += 1; //Arriba izquierda
+                    celulas[x2][j].vecinasVivas += 1; //Izquierda
+                    celulas[x2][y1].vecinasVivas += 1; //Izquierda abajo
+                    celulas[i][y1].vecinasVivas += 1; //Abajo
+                    celulas[x1][y1].vecinasVivas += 1; //Abajo Derecha
                 }
 
             }
         }
-        for(var i=0;i<79;i++){
-            for(var j=0;j<79;j++){
-                console.log("Hay "+celulas[i][j].vecinasVivas+" vecinas vivas");
+        for (var i = 0; i < 80; i++) {
+            for (var j = 0; j < 80; j++) {
+                console.log("Hay " + celulas[i][j].vecinasVivas + " vecinas vivas" + " i=" + i + ", j=" + j);
             }
         }
     });
