@@ -90,6 +90,7 @@ window.onload = function () {
 
         for(var i=0;i<79;i++){
             for(var j=0;j<79;j++){
+                if(celulas[i][j].vivo){
                 if(i==79){
                     var x1=i-i;//devuelve 0
                     var x2=i-1;//devuelve 78
@@ -110,22 +111,31 @@ window.onload = function () {
                     var y1=j+1;
                     var y2=j-1;
                 }
-                if(celulas[i][j].vivo){
+
                     celulas[x1][j].vecinasVivas+=1;//Derecha
                     celulas[x1][y2].vecinasVivas+=1;//Derecha arriba
                     celulas[i][y2].vecinasVivas+=1; //Arriba
                     celulas[x2][y2].vecinasVivas+=1;//Arriba izquierda
                     celulas[x2][j].vecinasVivas+=1;//Izquierda
                     celulas[x2][y1].vecinasVivas+=1;//Izquierda abajo
-                    celulas[i][y1].vecinasVIvas+=1;//Abajo
+                    celulas[i][y1].vecinasVivas+=1;//Abajo
                     celulas[x1][y1].vecinasVivas+=1;//Abajo Derecha
                 }
 
             }
         }
-        for(var i=0;i<79;i++){
+       /* for(var i=0;i<79;i++){
             for(var j=0;j<79;j++){
                 console.log("Hay "+celulas[i][j].vecinasVivas+" vecinas vivas");
+            }
+        }*/
+
+        for(var i=0;i<80;i++){
+            for(var j=0;j<80;j++){
+                compruebaCelula(i,j);
+                if(celulas[i][j].vivo){
+                    console.log("Celula "+j+","+i+" está viva");
+                }
             }
         }
     });
@@ -135,8 +145,8 @@ window.onload = function () {
         for(var j=0;j<80;j++){
             compruebaCelula(i,j);
         }
-    }
-*/
+    }*/
+
 
 
 
