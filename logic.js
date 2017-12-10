@@ -1,114 +1,148 @@
-var celulas = [
-    []
-];
+function mundo() {
+    var canvas = document.getElementById("myCanvas");
+    var context = canvas.getContext("2d");
+    context.fillStyle = "#24E711";
+    context.fillRect(0, 0, 800, 800);
+    var celulas = new celula().formarCelulas();
 
-window.onload = function () {
+    canvas.addEventListener("click", function(evt){
+        crearCelula(evt,celulas);
 
+    }, false);
+    this.getCelulas=function(){
+        return celulas;
+
+    }
     function celula() {
         vivo = false;
         tiempo = 0;
         vecinasVivas = 0;
-    }
 
-    for (var i = 0; i < 80; i++) {
-        celulas[i] = [];
-        for (var j = 0; j < 80; j++) {
-            celulas[i][j] = new celula();
-            celulas[i][j].vecinasVivas = 0;
+        /**
+         * Formamos el array de celulas
+         */
+        this.formarCelulas=function () {
+            var celulas = [
+                []
+            ];
+            for (var i = 0; i < 80; i++) {
+                celulas[i] = [];
+                for (var j = 0; j < 80; j++) {
+                    celulas[i][j] = new celula();
+                    celulas[i][j].vecinasVivas = 0;
+                }
+            }
+            return celulas;
         }
+
+
     }
-    var x1 = document.getElementById("myCanvas");
-    var c1 = x1.getContext("2d");
-    c1.fillStyle = "#24E711";
-    c1.fillRect(0, 0, 800, 800);
 
+    /**
+     * Funcion para dibujar el grid en el que vamos a crear el juego
+     */
+    this.dibujarGrid=function () {
+        context.beginPath();
+        for (var i = 10; i < 800; i=i + 10) {
+            context.moveTo(i, 0);
+            context.lineTo(i, 800);
+            context.moveTo(0, i);
+            context.lineTo(800, i);
+        }
+        context.closePath();
+        context.strokeStyle = "#000000";
+        context.stroke();
 
-    x1.addEventListener("click", crearCelula, false);
-
-    c1.beginPath();
-    for (var i = 10; i < 800; i = i + 10) {
-        c1.moveTo(i, 0);
-        c1.lineTo(i, 800);
-        c1.moveTo(0, i);
-        c1.lineTo(800, i);
     }
-    c1.closePath();
 
-    c1.strokeStyle = "#000000";
-    c1.stroke();
+    /**
+     *  El metodo recogera la posicion del raton dentro del propio canvas
+     *  Devuelve la posicion en X e Y
+     */
+    function posicionRaton(canvas, event) {
+        var rectangulo = canvas.getBoundingClientRect();
+        return {
+            x: event.clientX - rectangulo.left,
+            y: event.clientY - rectangulo.top
+        }
 
+    }
 
-    function crearCelula(event) {
-        if (!celulas[(Math.trunc(event.clientX / 10) - 1)][(Math.trunc(event.clientY / 10) - 1)].vivo) {
-            c1.fillStyle = "#FE0000";
-            c1.fillRect((Math.trunc(event.clientX / 10) - 1) * 10, (Math.trunc(event.clientY / 10) - 1) * 10, 10, 10);
-            c1.strokeRect((Math.trunc(event.clientX / 10) - 1) * 10, (Math.trunc(event.clientY / 10) - 1) * 10, 10, 10);
+    /**
+     *  El metodo cambia el estado de la celula y la colorea
+     * */
+    function crearCelula(event, celulas) {
+        if (!celulas[(Math.trunc(posicionRaton(canvas, event).x / 10))][(Math.trunc(posicionRaton(canvas, event).y / 10))].vivo) {
+            context.fillStyle = "#FE0000";
+            context.fillRect((Math.trunc(posicionRaton(canvas, event).x / 10)) * 10, (Math.trunc(posicionRaton(canvas, event).y / 10)) * 10, 10, 10);
+            context.strokeRect((Math.trunc(posicionRaton(canvas, event).x / 10)) * 10, (Math.trunc(posicionRaton(canvas, event).y / 10) ) * 10, 10, 10);
 
-            celulas[(Math.trunc(event.clientX / 10) - 1)][(Math.trunc(event.clientY / 10) - 1)].vivo = true;
+            celulas[(Math.trunc(posicionRaton(canvas, event).x / 10))][(Math.trunc(posicionRaton(canvas, event).y / 10))].vivo = true;
 
         } else {
 
-            c1.fillStyle = "#24E711";
-            c1.fillRect((Math.trunc(event.clientX / 10) - 1) * 10, (Math.trunc(event.clientY / 10) - 1) * 10, 10, 10);
-            c1.strokeRect((Math.trunc(event.clientX / 10) - 1) * 10, (Math.trunc(event.clientY / 10) - 1) * 10, 10, 10);
-            celulas[(Math.trunc(event.clientX / 10) - 1)][(Math.trunc(event.clientY / 10) - 1)].vivo = false;
+            context.fillStyle = "#24E711";
+            context.fillRect((Math.trunc(posicionRaton(canvas, event).x / 10)) * 10, (Math.trunc(posicionRaton(canvas, event).y / 10) ) * 10, 10, 10);
+            context.strokeRect((Math.trunc(posicionRaton(canvas, event).x / 10)) * 10, (Math.trunc(posicionRaton(canvas, event).y / 10) ) * 10, 10, 10);
+            celulas[(Math.trunc(posicionRaton(canvas, event).x / 10))][(Math.trunc(posicionRaton(canvas, event).y / 10))].vivo = false;
 
         }
     }
 
-
-    function compruebaCelula() {
+    /**
+     * El metodo comprobará las celulas para cambiar su estado dependiendo de la lógica descrita:
+     * Si la celula está viva...
+     *  Si tiene menos de 2 celulas vecinas vivas o mas de tres, la celula morira
+     *  Si existen 3 celulas vecinas vivas, la celula vivira
+     * Si la celula está muerta...
+     *  Si existen justo 3 celulas vecinas vivas, revivira
+     */
+    function compruebaCelula(celulas) {
 
         for (var i = 0; i < 80; i++) {
             for (var j = 0; j < 80; j++) {
                 if (celulas[i][j].vivo) {
                     if (celulas[i][j].vecinasVivas < 2 || celulas[i][j].vecinasVivas > 3) {
                         celulas[i][j].vivo = false;
-                        c1.fillStyle="#24E711";
-                        c1.fillRect(10*i,10*j,10,10);
-                        c1.strokeRect(10*i,10*j,10,10);
+                        context.fillStyle = "#24E711";
+                        context.fillRect(10 * i, 10 * j, 10, 10);
+                        context.strokeRect(10 * i, 10 * j, 10, 10);
                     } else if (celulas[i][j].vecinasVivas >= 2 && celulas[i][j].vecinasVivas <= 3) {
                         celulas[i][j].vivo = true;
-                        c1.fillStyle="#FE0000";
-                        c1.fillRect(10*i,10*j,10,10);
-                        c1.strokeRect(10*i,10*j,10,10);
+                        context.fillStyle = "#FE0000";
+                        context.fillRect(10 * i, 10 * j, 10, 10);
+                        context.strokeRect(10 * i, 10 * j, 10, 10);
                     }
                 } else {
                     if (celulas[i][j].vecinasVivas == 3) {
                         celulas[i][j].vivo = true;
-                        c1.fillStyle="#FE0000";
-                        c1.fillRect(10*i,10*j,10,10);
-                        c1.strokeRect(10*i,10*j,10,10);
+                        context.fillStyle = "#FE0000";
+                        context.fillRect(10 * i, 10 * j, 10, 10);
+                        context.strokeRect(10 * i, 10 * j, 10, 10);
                     }
                 }
             }
         }
 
 
-
-
-
     }
-    var intervalo;
-    //intervalo= window.setInterval(compruebaCelula, 100);
 
-    document.getElementById("play").addEventListener("click", function () {
-        intervalo= window.setInterval(play, 100);
-
-
-
-    });
-
-    function ceros(){
-        for(var i=0;i<80;i++){
-            for(var j=0;j<80;j++){
+    /**
+     * Ponemos el numero de vecinas vivas a 0 en todas
+     */
+    function ceros(celulas) {
+        for (var i = 0; i < 80; i++) {
+            for (var j = 0; j < 80; j++) {
                 celulas[i][j].vecinasVivas = 0;
             }
         }
 
     }
-    function play(){
-        ceros();
+
+    /**
+     * Función que cuenta el numero de celulas vecinas que tiene viva cada una
+     */
+    function sumaVivas(celulas){
         for (var i = 0; i < 80; i++) {
             for (var j = 0; j < 80; j++) {
                 if (celulas[i][j].vivo) {
@@ -146,32 +180,36 @@ window.onload = function () {
             }
         }
 
-        compruebaCelula();
-        console.log("funciona");
-
-/*
-        for (var i = 0; i < 80; i++) {
-            for (var j = 0; j < 80; j++) {
-                if(celulas[i][j].vecinasVivas>0) {
-                    console.log("Hay " + celulas[i][j].vecinasVivas + " vecinas vivas" + " i=" + i + ", j=" + j);
-                }
-            }
-        }*/
     }
 
-    document.getElementById("stop").addEventListener("click",function parar() {
-        window.clearInterval(intervalo);
+    /**
+     * Funcion donde se ejecutan las funciones necesarias para comenzar la partida
+     */
+    this.play=function(celulas) {
+        ceros(celulas);
+        sumaVivas(celulas);
+        compruebaCelula(celulas);
+    }
+}
 
+window.onload = function () {
+    var mondo=new mundo();
+    mondo.dibujarGrid();
+
+    var intervalo;
+
+    document.getElementById("play").addEventListener("click", function () {
+        intervalo = window.setInterval(function(){
+            mondo.play(mondo.getCelulas());
+
+        }, 100);
+
+    });
+    document.getElementById("stop").addEventListener("click",function(){
+        window.clearInterval(intervalo);
     });
 
 
-    /*
-    for(var i=0;i<80;i++){
-        for(var j=0;j<80;j++){
-            compruebaCelula(i,j);
-        }
-    }
-*/
 
 
 }
