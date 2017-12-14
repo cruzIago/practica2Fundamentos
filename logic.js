@@ -74,6 +74,8 @@ function mundo(ancho, alto) {
         for (var j = 0; j < ancho / 10; j++) {
             celulas[i][j] = new celula();
             celulas[i][j].vecinasVivas = 0;
+            celulas[i][j].tiempo = 0;
+            celulas[i][j].vivo = false;
         }
     }
     /**
@@ -118,17 +120,18 @@ function mundo(ancho, alto) {
 
                     } else if (celulas[i][j].vecinasVivas >= 2 && celulas[i][j].vecinasVivas <= 3) {
                         celulas[i][j].vivo = true;
-
+                        celulas[i][j].tiempo++;
                     }
                 } else {
                     if (celulas[i][j].vecinasVivas == 3) {
                         celulas[i][j].vivo = true;
-
+                        celulas[i][j].tiempo++;
                     }
                 }
             }
         }
-
+        ceros();
+        sumaVivas();
 
     }
 
