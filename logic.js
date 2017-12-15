@@ -9,13 +9,16 @@ function celula() {
 function dibujo(mundo) {
     var canvas = document.getElementById("myCanvas");
     var context = canvas.getContext("2d");
-    context.fillStyle = "#24E711";
-    context.fillRect(0, 0, mundo.getAncho(), mundo.getAlto());
+    canvas.width = mundo.getAncho();
+    canvas.height = mundo.getAlto();
 
     /**
      * Funcion para dibujar el grid en el que vamos a crear el juego
      */
     this.dibujarGrid = function() {
+            context.clearRect(0, 0, 800, 800);
+            context.fillStyle = "#24E711";
+            context.fillRect(0, 0, mundo.getAncho(), mundo.getAlto());
             context.beginPath();
             for (var i = 10; i < mundo.getAlto(); i = i + 10) {
                 context.moveTo(i, 0);
@@ -206,11 +209,14 @@ function mundo(ancho, alto) {
 
 function eventos() {
     var intervalo;
+    var isActive=false;
+    
     /**
      * Funcion para añadir el evento de click al canvas para pintar celdas
      */
     this.activarClickCelulas = function(objeto, mundo, dibujo) {
         objeto.addEventListener("click", function(event) {
+
             mundo.crearCelula(posicionRaton(objeto, event));
             dibujo.dibujarCelulas();
 
@@ -222,11 +228,14 @@ function eventos() {
      */
     this.activarPlay = function(objeto, mundo, dibujo) {
         objeto.addEventListener("click", function fun() {
-            intervalo = window.setInterval(function() {
-                mundo.play();
-                dibujo.dibujarCelulas();
-            }, 100);
-            
+            if(!isActive) {
+                intervalo = window.setInterval(function () {
+
+                    mundo.play();
+                    dibujo.dibujarCelulas();
+                }, 100);
+                isActive=true;
+            }
         });
 
     }
@@ -236,7 +245,10 @@ function eventos() {
      */
     this.pararPlay = function(objeto) {
         objeto.addEventListener("click", function() {
-            window.clearInterval(intervalo);
+            if(isActive) {
+                window.clearInterval(intervalo);
+                isActive=false;
+            }
 
         });
 
@@ -248,10 +260,12 @@ function eventos() {
 
     this.limpiarMundo = function (objeto, mundo, dibujo) {
         objeto.addEventListener("click", function () {
-            mundo.limpiaCelulas();
-            dibujo.dibujarCelulas();
-            window.clearInterval(intervalo);
-
+            if(isActive) {
+                mundo.limpiaCelulas();
+                dibujo.dibujarCelulas();
+                window.clearInterval(intervalo);
+                isActive=false;
+            }
         });
 
     }
@@ -278,11 +292,20 @@ function eventos() {
             var x = Math.trunc(raton.x / 10);
             var y = Math.trunc(raton.y / 10);
             var info = mundo.getCelulas();
-
             if (x < info.length && y < info.length && x >= 0 && y >= 0) {
                 texto.innerHTML = "Viva: " + info[x][y].vivo + "\n" + "Tiempo: " +
                     info[x][y].tiempo + "\n" + "Vecinas: " + info[x][y].vecinasVivas, raton.x, raton.y;
             }
+        });
+    }
+
+    this.sizeCanvas = function(objeto, mondo, dibujar) {
+        objeto.addEventListener("change", function(event) {
+            var size = objeto.value;
+            mondo.limpiaCelulas();
+            mondo = new mundo(size, size);
+            dibujar = new dibujo(mondo);
+            dibujar.dibujarGrid();
         });
     }
 }
@@ -295,11 +318,13 @@ window.onload = function() {
     var botonClear = document.getElementById("clean");
 
     var texto = document.getElementById("coordenadas");
+    var barraSize = document.getElementById("barSize");
 
-
-    var mondo = new mundo(canvas.height, canvas.width);
-    var dibujar = new dibujo(mondo);
     var eventar = new eventos();
+    var size = barraSize.value;
+
+    var mondo = new mundo(size, size);
+    var dibujar = new dibujo(mondo);
 
 
     eventar.activarClickCelulas(canvas, mondo, dibujar);
@@ -308,6 +333,8 @@ window.onload = function() {
     eventar.limpiarMundo(botonClear, mondo, dibujar);
 
     eventar.infoCelula(canvas, mondo, texto);
+    eventar.sizeCanvas(barraSize, mondo, dibujar);
+
 
 
     dibujar.dibujarGrid();
