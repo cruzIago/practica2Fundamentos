@@ -1,19 +1,22 @@
 function celula() {
-    vivo = false;
-    tiempo = 0;
-    vecinasVivas = 0;
+    var vivo = false;
+    var tiempo = 0;
+    var vecinasVivas = 0;
 }
 
 function dibujo(mundo) {
     var canvas = document.getElementById("myCanvas");
     var context = canvas.getContext("2d");
-    context.fillStyle = "#24E711";
-    context.fillRect(0, 0, mundo.getAncho(), mundo.getAlto());
+    canvas.width = mundo.getAncho();
+    canvas.height = mundo.getAlto();
 
     /**
      * Funcion para dibujar el grid en el que vamos a crear el juego
      */
     this.dibujarGrid = function() {
+            context.clearRect(0, 0, 800, 800);
+            context.fillStyle = "#24E711";
+            context.fillRect(0, 0, mundo.getAncho(), mundo.getAlto());
             context.beginPath();
             for (var i = 10; i < mundo.getAlto(); i = i + 10) {
                 context.moveTo(i, 0);
@@ -267,11 +270,20 @@ function eventos() {
             var x = Math.trunc(raton.x / 10);
             var y = Math.trunc(raton.y / 10);
             var info = mundo.getCelulas();
-            console.log("x: " + x + ", y: " + y);
             if (x < info.length && y < info.length && x >= 0 && y >= 0) {
                 texto.innerHTML = "Viva: " + info[x][y].vivo + "\n" + "Tiempo: " +
                     info[x][y].tiempo + "\n" + "Vecinas: " + info[x][y].vecinasVivas, raton.x, raton.y;
             }
+        });
+    }
+
+    this.sizeCanvas = function(objeto, mondo, dibujar) {
+        objeto.addEventListener("change", function(event) {
+            size = objeto.value;
+            mondo.limpiaCelulas();
+            mondo = new mundo(size, size);
+            dibujar = new dibujo(mondo);
+            dibujar.dibujarGrid();
         });
     }
 }
@@ -283,16 +295,21 @@ window.onload = function() {
     var botonStop = document.getElementById("stop");
     var botonClear = document.getElementById("clean");
     var texto = document.getElementById("coordenadas");
+    var barraSize = document.getElementById("barSize");
 
-    var mondo = new mundo(canvas.height, canvas.width);
-    var dibujar = new dibujo(mondo);
     var eventar = new eventos();
+    var size = barraSize.value;
+
+    var mondo = new mundo(size, size);
+    var dibujar = new dibujo(mondo);
 
     eventar.activarClickCelulas(canvas, mondo, dibujar);
     eventar.activarPlay(botonPlay, mondo, dibujar);
     eventar.pararPlay(botonStop);
     eventar.limpiarMundo(botonClear, mondo, dibujar);
     eventar.infoCelula(canvas, mondo, texto);
+    eventar.sizeCanvas(barraSize, mondo, dibujar);
+
 
     dibujar.dibujarGrid();
 

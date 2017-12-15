@@ -8,11 +8,14 @@
 </head>
 
 <body>
-    <canvas id="myCanvas" width="600" height="600" style="border:1px solid #000000; image-rendering: -moz-crisp-edges;">El navegador actual no soporta Canvas</canvas>
+    <canvas id="myCanvas" width="800" height="800" style="border:1px solid #000000; image-rendering: -moz-crisp-edges;">El navegador actual no soporta Canvas</canvas>
     <button id="play">Pulsa</button>
     <button id="stop">Parar</button>
     <button id="clean">Limpiar</button>
     <p id="coordenadas">Coordenadas</p>
+    <form method="get">
+        <input id="barSize" type="range" name="Tamaño" min="100" max="1000" step="100" value="800">
+    </form>
 
 </body>
 <script src="logic.js"></script>
