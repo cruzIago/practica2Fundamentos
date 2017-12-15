@@ -1,7 +1,9 @@
+"use strict";
+
 function celula() {
-    vivo = false;
-    tiempo = 0;
-    vecinasVivas = 0;
+    var vivo = false;
+    var tiempo = 0;
+    var vecinasVivas = 0;
 }
 
 function dibujo(mundo) {
@@ -13,22 +15,22 @@ function dibujo(mundo) {
     /**
      * Funcion para dibujar el grid en el que vamos a crear el juego
      */
-    this.dibujarGrid = function () {
-        context.beginPath();
-        for (var i = 10; i < mundo.getAlto(); i = i + 10) {
-            context.moveTo(i, 0);
-            context.lineTo(i, mundo.getAlto());
-            context.moveTo(0, i);
-            context.lineTo(mundo.getAlto(), i);
+    this.dibujarGrid = function() {
+            context.beginPath();
+            for (var i = 10; i < mundo.getAlto(); i = i + 10) {
+                context.moveTo(i, 0);
+                context.lineTo(i, mundo.getAlto());
+                context.moveTo(0, i);
+                context.lineTo(mundo.getAlto(), i);
+            }
+            context.closePath();
+            context.strokeStyle = "#000000";
+            context.stroke();
         }
-        context.closePath();
-        context.strokeStyle = "#000000";
-        context.stroke();
-    }
-    /**
-     * Metodo de redibujo del mundo
-     */
-    this.dibujarCelulas = function () {
+        /**
+         * Metodo de redibujo del mundo
+         */
+    this.dibujarCelulas = function() {
         var arrayAux;
 
         arrayAux = mundo.getCelulas();
@@ -55,14 +57,14 @@ function mundo(ancho, alto) {
     ];
 
     //Devolvemos el array de celulas
-    this.getCelulas = function () {
+    this.getCelulas = function() {
         return celulas;
     }
 
-    this.getAncho = function () {
+    this.getAncho = function() {
         return ancho;
     }
-    this.getAlto = function () {
+    this.getAlto = function() {
         return alto;
     }
 
@@ -74,12 +76,14 @@ function mundo(ancho, alto) {
         for (var j = 0; j < ancho / 10; j++) {
             celulas[i][j] = new celula();
             celulas[i][j].vecinasVivas = 0;
+            celulas[i][j].tiempo = 0;
+            celulas[i][j].vivo = false;
         }
     }
     /**
      * Pone el array de celulas a false
      */
-    this.limpiaCelulas = function () {
+    this.limpiaCelulas = function() {
         for (var i = 0; i < alto / 10; i++) {
             for (var j = 0; j < ancho / 10; j++) {
                 celulas[i][j].vivo = false;
@@ -91,7 +95,7 @@ function mundo(ancho, alto) {
     /**
      *  El metodo cambia el estado de la celula y la colorea
      * */
-    this.crearCelula = function (posicion) {
+    this.crearCelula = function(posicion) {
         if (!celulas[Math.trunc(posicion.x / 10)][Math.trunc(posicion.y / 10)].vivo) {
             celulas[Math.trunc(posicion.x / 10)][Math.trunc(posicion.y / 10)].vivo = true;
 
@@ -118,17 +122,18 @@ function mundo(ancho, alto) {
 
                     } else if (celulas[i][j].vecinasVivas >= 2 && celulas[i][j].vecinasVivas <= 3) {
                         celulas[i][j].vivo = true;
-
+                        celulas[i][j].tiempo++;
                     }
                 } else {
                     if (celulas[i][j].vecinasVivas == 3) {
                         celulas[i][j].vivo = true;
-
+                        celulas[i][j].tiempo++;
                     }
                 }
             }
         }
-
+        ceros();
+        sumaVivas();
 
     }
 
@@ -188,13 +193,15 @@ function mundo(ancho, alto) {
     }
 
     /**
-     * Funcion donde se ejecutan las funciones necesarias para comenzar la partida
+     * Funcion donde se ejecutan las funciones necesarias para la partida
      */
-    this.play = function () {
+    this.play = function() {
         ceros();
         sumaVivas();
         compruebaCelula();
     }
+
+
 }
 
 function eventos() {
@@ -202,8 +209,8 @@ function eventos() {
     /**
      * Funcion para añadir el evento de click al canvas para pintar celdas
      */
-    this.activarClickCelulas = function (objeto, mundo, dibujo) {
-        objeto.addEventListener("click", function (event) {
+    this.activarClickCelulas = function(objeto, mundo, dibujo) {
+        objeto.addEventListener("click", function(event) {
             mundo.crearCelula(posicionRaton(objeto, event));
             dibujo.dibujarCelulas();
 
@@ -213,13 +220,13 @@ function eventos() {
     /**
      * Función para añadir el evento de inicio
      */
-    this.activarPlay = function (objeto, mundo, dibujo) {
-        objeto.addEventListener("click", function () {
-            intervalo = window.setInterval(function () {
+    this.activarPlay = function(objeto, mundo, dibujo) {
+        objeto.addEventListener("click", function fun() {
+            intervalo = window.setInterval(function() {
                 mundo.play();
                 dibujo.dibujarCelulas();
             }, 100);
-
+            
         });
 
     }
@@ -227,8 +234,8 @@ function eventos() {
     /**
      * Funcion para parar el intervalo
      */
-    this.pararPlay = function (objeto) {
-        objeto.addEventListener("click", function () {
+    this.pararPlay = function(objeto) {
+        objeto.addEventListener("click", function() {
             window.clearInterval(intervalo);
 
         });
@@ -253,6 +260,7 @@ function eventos() {
      *  El metodo recogera la posicion del raton dentro del propio canvas
      *  Devuelve la posicion en X e Y
      */
+
     function posicionRaton(canvas, event) {
         var rectangulo = canvas.getBoundingClientRect();
         return {
@@ -261,23 +269,46 @@ function eventos() {
         }
     }
 
+    /**
+     * Nos da la información de la célula
+     */
+    this.infoCelula = function(objeto, mundo, texto) {
+        objeto.addEventListener("mousemove", function(event) {
+            var raton = posicionRaton(objeto, event);
+            var x = Math.trunc(raton.x / 10);
+            var y = Math.trunc(raton.y / 10);
+            var info = mundo.getCelulas();
+
+            if (x < info.length && y < info.length && x >= 0 && y >= 0) {
+                texto.innerHTML = "Viva: " + info[x][y].vivo + "\n" + "Tiempo: " +
+                    info[x][y].tiempo + "\n" + "Vecinas: " + info[x][y].vecinasVivas, raton.x, raton.y;
+            }
+        });
+    }
 }
 
 
-window.onload = function () {
+window.onload = function() {
     var canvas = document.getElementById("myCanvas");
     var botonPlay = document.getElementById("play");
     var botonStop = document.getElementById("stop");
     var botonClear = document.getElementById("clean");
 
+    var texto = document.getElementById("coordenadas");
+
+
     var mondo = new mundo(canvas.height, canvas.width);
     var dibujar = new dibujo(mondo);
     var eventar = new eventos();
+
 
     eventar.activarClickCelulas(canvas, mondo, dibujar);
     eventar.activarPlay(botonPlay, mondo, dibujar);
     eventar.pararPlay(botonStop);
     eventar.limpiarMundo(botonClear, mondo, dibujar);
+
+    eventar.infoCelula(canvas, mondo, texto);
+
 
     dibujar.dibujarGrid();
 
