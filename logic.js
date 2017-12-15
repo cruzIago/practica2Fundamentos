@@ -206,6 +206,7 @@ function eventos() {
         objeto.addEventListener("click", function (event) {
             mundo.crearCelula(posicionRaton(objeto, event));
             dibujo.dibujarCelulas();
+
         });
     }
 
@@ -218,7 +219,9 @@ function eventos() {
                 mundo.play();
                 dibujo.dibujarCelulas();
             }, 100);
+
         });
+
     }
 
     /**
@@ -227,20 +230,25 @@ function eventos() {
     this.pararPlay = function (objeto) {
         objeto.addEventListener("click", function () {
             window.clearInterval(intervalo);
+
         });
+
     }
 
     /**
      * Limpiamos la pantalla, paramos el intervalo
      */
 
-    this.limpiarMundo=function(objeto,mundo,dibujo){
-        objeto.addEventListener("click",function(){
-        mundo.limpiaCelulas();
-        dibujo.dibujarCelulas();
-        window.clearInterval(intervalo);
+    this.limpiarMundo = function (objeto, mundo, dibujo) {
+        objeto.addEventListener("click", function () {
+            mundo.limpiaCelulas();
+            dibujo.dibujarCelulas();
+            window.clearInterval(intervalo);
+
         });
+
     }
+
     /**
      *  El metodo recogera la posicion del raton dentro del propio canvas
      *  Devuelve la posicion en X e Y
@@ -260,7 +268,7 @@ window.onload = function () {
     var canvas = document.getElementById("myCanvas");
     var botonPlay = document.getElementById("play");
     var botonStop = document.getElementById("stop");
-    var botonClear=document.getElementById("clean");
+    var botonClear = document.getElementById("clean");
 
     var mondo = new mundo(canvas.height, canvas.width);
     var dibujar = new dibujo(mondo);
@@ -269,7 +277,7 @@ window.onload = function () {
     eventar.activarClickCelulas(canvas, mondo, dibujar);
     eventar.activarPlay(botonPlay, mondo, dibujar);
     eventar.pararPlay(botonStop);
-    eventar.limpiarMundo(botonClear,mondo,dibujar);
+    eventar.limpiarMundo(botonClear, mondo, dibujar);
 
     dibujar.dibujarGrid();
 
