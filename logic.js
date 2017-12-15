@@ -207,18 +207,18 @@ function mundo(ancho, alto) {
 
 }
 
-function eventos() {
+function eventos(mondo,debujo) {
     var intervalo;
     var isActive=false;
-    
+    var mendo=mondo;
+    var dibojo=debujo;
     /**
      * Funcion para añadir el evento de click al canvas para pintar celdas
      */
-    this.activarClickCelulas = function(objeto, mundo, dibujo) {
+    this.activarClickCelulas = function(objeto) {
         objeto.addEventListener("click", function(event) {
-
-            mundo.crearCelula(posicionRaton(objeto, event));
-            dibujo.dibujarCelulas();
+            mendo.crearCelula(posicionRaton(objeto, event));
+            dibojo.dibujarCelulas();
 
         });
     }
@@ -226,13 +226,13 @@ function eventos() {
     /**
      * Función para añadir el evento de inicio
      */
-    this.activarPlay = function(objeto, mundo, dibujo) {
+    this.activarPlay = function(objeto) {
         objeto.addEventListener("click", function fun() {
             if(!isActive) {
                 intervalo = window.setInterval(function () {
 
-                    mundo.play();
-                    dibujo.dibujarCelulas();
+                    mendo.play();
+                    dibojo.dibujarCelulas();
                 }, 100);
                 isActive=true;
             }
@@ -258,11 +258,11 @@ function eventos() {
      * Limpiamos la pantalla, paramos el intervalo
      */
 
-    this.limpiarMundo = function (objeto, mundo, dibujo) {
+    this.limpiarMundo = function (objeto) {
         objeto.addEventListener("click", function () {
             if(isActive) {
-                mundo.limpiaCelulas();
-                dibujo.dibujarCelulas();
+                mendo.limpiaCelulas();
+                dibojo.dibujarCelulas();
                 window.clearInterval(intervalo);
                 isActive=false;
             }
@@ -286,12 +286,12 @@ function eventos() {
     /**
      * Nos da la información de la célula
      */
-    this.infoCelula = function(objeto, mundo, texto) {
+    this.infoCelula = function(objeto, texto) {
         objeto.addEventListener("mousemove", function(event) {
             var raton = posicionRaton(objeto, event);
             var x = Math.trunc(raton.x / 10);
             var y = Math.trunc(raton.y / 10);
-            var info = mundo.getCelulas();
+            var info = mendo.getCelulas();
             if (x < info.length && y < info.length && x >= 0 && y >= 0) {
                 texto.innerHTML = "Viva: " + info[x][y].vivo + "\n" + "Tiempo: " +
                     info[x][y].tiempo + "\n" + "Vecinas: " + info[x][y].vecinasVivas, raton.x, raton.y;
@@ -299,13 +299,13 @@ function eventos() {
         });
     }
 
-    this.sizeCanvas = function(objeto, mondo, dibujar) {
+    this.sizeCanvas = function(objeto) {
         objeto.addEventListener("change", function(event) {
             var size = objeto.value;
-            mondo.limpiaCelulas();
-            mondo = new mundo(size, size);
-            dibujar = new dibujo(mondo);
-            dibujar.dibujarGrid();
+            mendo.limpiaCelulas();
+            mendo = new mundo(size, size);
+            dibojo = new dibujo(mendo);
+            dibojo.dibujarGrid();
         });
     }
 }
@@ -320,20 +320,20 @@ window.onload = function() {
     var texto = document.getElementById("coordenadas");
     var barraSize = document.getElementById("barSize");
 
-    var eventar = new eventos();
+    //var eventar = new eventos();
     var size = barraSize.value;
 
     var mondo = new mundo(size, size);
     var dibujar = new dibujo(mondo);
+    var eventar = new eventos(mondo,dibujar);
 
-
-    eventar.activarClickCelulas(canvas, mondo, dibujar);
-    eventar.activarPlay(botonPlay, mondo, dibujar);
+    eventar.activarClickCelulas(canvas);
+    eventar.activarPlay(botonPlay);
     eventar.pararPlay(botonStop);
-    eventar.limpiarMundo(botonClear, mondo, dibujar);
+    eventar.limpiarMundo(botonClear);
 
-    eventar.infoCelula(canvas, mondo, texto);
-    eventar.sizeCanvas(barraSize, mondo, dibujar);
+    eventar.infoCelula(canvas,texto);
+    eventar.sizeCanvas(barraSize);
 
 
 
