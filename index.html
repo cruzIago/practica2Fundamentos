@@ -7,14 +7,25 @@
     <link rel="stylesheet" type="text/css" href="style.css">
 </head>
 
-<body>
-    <canvas id="myCanvas" width="800" height="800" style="border:1px solid #000000; image-rendering: -moz-crisp-edges;">El navegador actual no soporta Canvas</canvas>
-    <button id="play">Pulsa</button>
+
+    <canvas id="myCanvas" width="500" height="500" style="border:1px solid #000000; image-rendering: -moz-crisp-edges;">El navegador actual no soporta Canvas</canvas>
+    <input id="blinker" name="Blinker" value="0" type="image" src="https://upload.wikimedia.org/wikipedia/commons/9/95/Game_of_life_blinker.gif">
+    <input id="glider" name="Glider" value="1" type="image" src="https://upload.wikimedia.org/wikipedia/commons/f/f2/Game_of_life_animated_glider.gif">
+    <input id="boat" name="Boat" value="2" type="image" src="https://upload.wikimedia.org/wikipedia/commons/thumb/7/7f/Game_of_life_boat.svg/82px-Game_of_life_boat.svg.png">
+    <input id="acorn" name="Acorn" value="3" type="image" src="https://upload.wikimedia.org/wikipedia/commons/thumb/b/b9/Game_of_life_acorn.svg/146px-Game_of_life_acorn.svg.png">
+
+
+
+    <button id="play">Jugar</button>
     <button id="stop">Parar</button>
     <button id="clean">Limpiar</button>
+    <button id="about">About</button>
     <p id="coordenadas">Coordenadas</p>
-    <form method="get">
-        <input id="barSize" type="range" name="Tamaño" min="100" max="1000" step="100" value="800">
+    <p id="forma">Forma actual: default</p>
+
+    <form id="slider" method="get">
+        <p>Tamaño:
+        <input id="barSize" type="range" name="Tamano" min="100" max="1000" step="100" value="500"></p>
     </form>
 
 </body>
